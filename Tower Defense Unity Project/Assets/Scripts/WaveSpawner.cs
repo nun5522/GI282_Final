@@ -44,6 +44,7 @@ public class WaveSpawner : MonoBehaviour {
 		countdown = Mathf.Clamp(countdown, 0f, Mathf.Infinity);
 
 		waveCountdownText.text = string.Format("{0:00.00}", countdown);
+
 	}
 
 	IEnumerator SpawnWave ()
@@ -52,11 +53,18 @@ public class WaveSpawner : MonoBehaviour {
 
 		Wave wave = waves[waveIndex];
 
+		wave.count += Mathf.FloorToInt(waveIndex * wave.difficultyMultiplier); // เพิ่มจำนวนศัตรู
+
+    	wave.rate *= 1.1f; // เพิ่มอัตราการเกิด
+
 		EnemiesAlive = wave.count;
 
 		for (int i = 0; i < wave.count; i++)
 		{
 			GameObject enemy = wave.enemies[Random.Range(0, wave.enemies.Length)];
+			Enemy enemyComponent = enemy.GetComponent<Enemy>();
+        	enemyComponent.startHealth *= wave.healthMultiplier;
+        	enemyComponent.startSpeed *= wave.speedMultiplier;
 			SpawnEnemy(enemy);
 			yield return new WaitForSeconds(1f / wave.rate);
 		}
